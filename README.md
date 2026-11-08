@@ -6,7 +6,7 @@ sección SCV6). Docente facilitadora: Verónica Mora Lezcano.
 
 ## Integrantes
 
-- Juan Pablo [APELLIDOS] (entrega individual)
+- Juan Pablo Picado Chaves (entrega individual)
 
 ## Descripción
 

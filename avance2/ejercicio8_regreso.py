@@ -1,7 +1,7 @@
 # ============================================================
 # Archivo: ejercicio8_regreso.py
 # Curso: SOFT-01 Principios de Programación 1 - Sección SCV6
-# Integrantes: Juan Pablo [APELLIDOS]
+# Integrantes: Juan Pablo Picado Chaves
 # Fecha: 08/11/2026     Versión: 1.0
 # Descripción: Evalúa si la nave puede iniciar el regreso. Si hay
 #              combustible, simula día a día el viaje de vuelta; si no,

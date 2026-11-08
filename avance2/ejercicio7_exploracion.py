@@ -1,7 +1,7 @@
 # ============================================================
 # Archivo: ejercicio7_exploracion.py
 # Curso: SOFT-01 Principios de Programación 1 - Sección SCV6
-# Integrantes: Juan Pablo [APELLIDOS]
+# Integrantes: Juan Pablo Picado Chaves
 # Fecha: 08/11/2026     Versión: 1.0
 # Descripción: Simula las actividades de exploración científica en
 #              el destino mediante un menú que se repite hasta que la
