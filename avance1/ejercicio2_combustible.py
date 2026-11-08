@@ -1,7 +1,7 @@
 # ============================================================
 # Archivo: ejercicio2_combustible.py
 # Curso: SOFT-01 Principios de Programacion 1 - Seccion SCV6
-# Integrantes: [COMPLETAR NOMBRES]
+# Integrantes: Juan Pablo Picado Chaves
 # Fecha: [COMPLETAR FECHA]    Version: 1.0
 # Descripcion: Verifica el margen adicional de combustible.
 # ============================================================
