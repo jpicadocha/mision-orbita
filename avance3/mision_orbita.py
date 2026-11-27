@@ -430,3 +430,68 @@ def ejecutar_mision(numero):
     mision = [numero, nombre_mision, nombre_destino, resultado, puntos]
     mostrar_reporte(mision, bitacora)
     return mision
+
+
+# ============================================================
+# Componente F: Menú principal e historial de misiones
+# ============================================================
+
+def mostrar_menu_principal():
+    print("===== MISIÓN ÓRBITA =====")
+    print("1. Planificar y ejecutar una misión")
+    print("2. Ver historial de misiones")
+    print("3. Salir")
+
+
+def obtener_puntos_mision(mision):
+    # Criterio de ordenamiento para sorted(): puntos de la misión
+    puntos = mision[MIS_PUNTOS]
+    return puntos
+
+
+def ordenar_historial(historial):
+    # Matriz nueva de mayor a menor puntaje; el historial original no cambia
+    historial_ordenado = sorted(historial, key=obtener_puntos_mision, reverse=True)
+    return historial_ordenado
+
+
+def linea_mision(mision):
+    linea = (f"#{mision[MIS_NUMERO]} {mision[MIS_NOMBRE]} | {mision[MIS_DESTINO]} | "
+             f"{mision[MIS_RESULTADO]} | {mision[MIS_PUNTOS]} puntos")
+    return linea
+
+
+def mostrar_historial(historial):
+    print("=== HISTORIAL DE MISIONES ===")
+    # Decisión: historial vacío o recorrido del historial ordenado
+    if len(historial) == 0:
+        print("No hay misiones registradas.")
+    else:
+        for mision in ordenar_historial(historial):
+            print(linea_mision(mision))
+
+
+def main():
+    # El historial vive en main y se comparte solo por parámetros
+    historial = []
+    # Variable de control del menú principal
+    en_ejecucion = True
+    while en_ejecucion:
+        mostrar_menu_principal()
+        opcion = int(input("Seleccione una opción: "))
+
+        # Decisión: opción del menú principal
+        if opcion == OPCION_PLANIFICAR:
+            # El número de la misión es la cantidad de misiones registradas + 1
+            mision = ejecutar_mision(len(historial) + 1)
+            historial.append(mision)
+        elif opcion == OPCION_HISTORIAL:
+            mostrar_historial(historial)
+        elif opcion == OPCION_SALIR:
+            en_ejecucion = False
+        else:
+            print("Opción no válida.")
+    print("Fin del sistema Misión Órbita.")
+
+
+main()
