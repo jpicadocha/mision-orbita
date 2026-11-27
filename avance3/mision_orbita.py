@@ -209,3 +209,78 @@ def mostrar_recursos(recursos):
     print("Recursos restantes:")
     for i in range(len(recursos)):
         print(f"- {RECURSOS[i].capitalize()}: {recursos[i]} unidades")
+
+
+# ============================================================
+# Componente C: Exploración con bitácora
+# ============================================================
+
+def mostrar_menu_actividades():
+    # Salida: la opción para finalizar se calcula para que siga siendo
+    # correcta si se agregan actividades a la tupla
+    for i in range(len(ACTIVIDADES)):
+        print(f"{i + 1}. {ACTIVIDADES[i][ACT_NOMBRE]}")
+    print(f"{len(ACTIVIDADES) + 1}. Finalizar exploración")
+
+
+def explorar(recursos):
+    print("=== EXPLORACIÓN ===")
+    bitacora = []
+    opcion_finalizar = len(ACTIVIDADES) + 1
+    # Variable de control del menú: el ciclo termina por su condición
+    explorando = True
+    while explorando:
+        mostrar_menu_actividades()
+        opcion = int(input("Seleccione una actividad: "))
+
+        # Decisión: actividad válida, finalizar u opción no válida
+        if opcion >= PRIMERA_OPCION and opcion < opcion_finalizar:
+            actividad = ACTIVIDADES[opcion - 1]
+            # Se revisan los tres recursos que consumen las actividades
+            if (recursos[COMBUSTIBLE] >= actividad[ACT_COMBUSTIBLE]
+                    and recursos[ENERGIA] >= actividad[ACT_ENERGIA]
+                    and recursos[PROVISIONES] >= actividad[ACT_PROVISIONES]):
+                recursos[COMBUSTIBLE] = recursos[COMBUSTIBLE] - actividad[ACT_COMBUSTIBLE]
+                recursos[ENERGIA] = recursos[ENERGIA] - actividad[ACT_ENERGIA]
+                recursos[PROVISIONES] = recursos[PROVISIONES] - actividad[ACT_PROVISIONES]
+                # El número de la fila es el orden en que se hizo la actividad
+                bitacora.append([len(bitacora) + 1, actividad[ACT_NOMBRE],
+                                 actividad[ACT_PUNTOS]])
+                print(f"Actividad realizada: {actividad[ACT_NOMBRE]}. "
+                      f"Puntos obtenidos: {actividad[ACT_PUNTOS]}")
+            else:
+                # La consigna pide terminar aunque otra actividad sí alcance
+                print("Recursos insuficientes para realizar la actividad. "
+                      "La exploración finaliza.")
+                explorando = False
+        elif opcion == opcion_finalizar:
+            print("Exploración finalizada por la tripulación.")
+            explorando = False
+        else:
+            print("Opción no válida.")
+    return bitacora
+
+
+def contar_actividad(bitacora, nombre_actividad):
+    # Recorrido con contador: cuántas filas corresponden a la actividad
+    cantidad = 0
+    for fila in bitacora:
+        if fila[BIT_ACTIVIDAD] == nombre_actividad:
+            cantidad = cantidad + 1
+    return cantidad
+
+
+def calcular_puntos(bitacora):
+    # Recorrido con acumulador (no se permite sum())
+    total_puntos = 0
+    for fila in bitacora:
+        total_puntos = total_puntos + fila[BIT_PUNTOS]
+    return total_puntos
+
+
+def mostrar_resumen_exploracion(bitacora, recursos):
+    # Salida: resumen de la exploración y recursos para el regreso
+    print(f"Actividades realizadas: {len(bitacora)}")
+    print(f"Muestras recolectadas: {contar_actividad(bitacora, NOMBRE_MUESTRA)}")
+    print(f"Puntos científicos: {calcular_puntos(bitacora)}")
+    mostrar_recursos(recursos)
