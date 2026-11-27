@@ -150,3 +150,32 @@ def autorizar_lanzamiento(disponibles, requeridos):
         if disponibles[i] < requeridos[i]:
             autorizado = False
     return autorizado
+
+
+# ============================================================
+# Componente B: Viaje de ida (descuento directo)
+# ============================================================
+
+def calcular_consumo_diario(tripulantes):
+    # Procesamiento: oxígeno y provisiones dependen de la tripulación
+    consumo = [CONSUMO_COMBUSTIBLE_DIA,
+               CONSUMO_OXIGENO_TRIPULANTE_DIA * tripulantes,
+               CONSUMO_ENERGIA_DIA,
+               CONSUMO_PROVISIONES_TRIPULANTE_DIA * tripulantes]
+    return consumo
+
+
+def viajar_al_destino(recursos, dias_viaje, tripulantes):
+    # Procesamiento: como la misión fue autorizada, los recursos alcanzan
+    # para la ida, así que se descuenta todo el viaje de una sola vez
+    consumo = calcular_consumo_diario(tripulantes)
+    for i in range(len(recursos)):
+        recursos[i] = recursos[i] - consumo[i] * dias_viaje
+    return recursos
+
+
+def mostrar_recursos(recursos):
+    # Salida: recursos actuales, con el nombre del recurso en mayúscula
+    print("Recursos restantes:")
+    for i in range(len(recursos)):
+        print(f"- {RECURSOS[i].capitalize()}: {recursos[i]} unidades")
