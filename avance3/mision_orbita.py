@@ -174,6 +174,36 @@ def viajar_al_destino(recursos, dias_viaje, tripulantes):
     return recursos
 
 
+def recursos_alcanzan(recursos, consumo):
+    # Decisión: un día solo se puede viajar si todos los recursos cubren su consumo
+    alcanzan = True
+    for i in range(len(recursos)):
+        if recursos[i] < consumo[i]:
+            alcanzan = False
+    return alcanzan
+
+
+def simular_trayecto(recursos, dias, tripulantes):
+    # Procesamiento: simulación día a día. dias_completados es el contador y
+    # puede_continuar es la variable de control que detiene el ciclo cuando
+    # falta un recurso (no se usa break).
+    consumo = calcular_consumo_diario(tripulantes)
+    dias_completados = 0
+    puede_continuar = True
+    while dias_completados < dias and puede_continuar:
+        # Se verifica antes de descontar para no registrar un día incompleto
+        if recursos_alcanzan(recursos, consumo):
+            for i in range(len(recursos)):
+                recursos[i] = recursos[i] - consumo[i]
+            dias_completados = dias_completados + 1
+            print(f"Día {dias_completados} | Combustible: {recursos[COMBUSTIBLE]} | "
+                  f"Oxígeno: {recursos[OXIGENO]} | Energía: {recursos[ENERGIA]} | "
+                  f"Provisiones: {recursos[PROVISIONES]}")
+        else:
+            puede_continuar = False
+    return dias_completados
+
+
 def mostrar_recursos(recursos):
     # Salida: recursos actuales, con el nombre del recurso en mayúscula
     print("Recursos restantes:")
