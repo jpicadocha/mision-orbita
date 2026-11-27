@@ -84,3 +84,69 @@ PRIMERA_OPCION = 1
 OPCION_PLANIFICAR = 1
 OPCION_HISTORIAL = 2
 OPCION_SALIR = 3
+
+
+# ============================================================
+# Componente A: Preparación y autorización
+# ============================================================
+
+def mostrar_destinos():
+    # Salida: un destino por línea, numerado desde 1 para el usuario
+    print("Destinos disponibles:")
+    numero = PRIMERA_OPCION
+    for destino in DESTINOS:
+        print(f"{numero}. {destino[DES_NOMBRE]} ({destino[DES_DIAS]} días)")
+        numero = numero + 1
+
+
+def leer_recursos():
+    # Entrada de datos: se pide cada recurso en el orden de RECURSOS,
+    # así la posición de la lista coincide con las constantes de posición
+    recursos = []
+    for nombre_recurso in RECURSOS:
+        cantidad = int(input(f"Cantidad disponible de {nombre_recurso}: "))
+        recursos.append(cantidad)
+    return recursos
+
+
+def calcular_requeridos(dias_viaje, tripulantes):
+    # Procesamiento: fórmulas del Avance 1. Se multiplica por TRAYECTOS
+    # porque la nave debe conservar recursos para volver a la Tierra.
+    combustible = dias_viaje * CONSUMO_COMBUSTIBLE_DIA * TRAYECTOS + RESERVA_COMBUSTIBLE
+    oxigeno = (dias_viaje * CONSUMO_OXIGENO_TRIPULANTE_DIA * TRAYECTOS * tripulantes
+               + OXIGENO_EMERGENCIA)
+    energia = dias_viaje * CONSUMO_ENERGIA_DIA * TRAYECTOS + ENERGIA_EXPLORACION
+    provisiones = (dias_viaje * tripulantes * CONSUMO_PROVISIONES_TRIPULANTE_DIA * TRAYECTOS
+                   + PROVISIONES_ADICIONALES)
+    requeridos = [combustible, oxigeno, energia, provisiones]
+    return requeridos
+
+
+def mostrar_resumen(nombre_mision, nombre_destino, dias_viaje, tripulantes,
+                    disponibles, requeridos):
+    # Salida: datos generales de la misión
+    print(f"Misión: {nombre_mision}")
+    print(f"Destino: {nombre_destino}")
+    print(f"Duración del viaje de ida: {dias_viaje} días")
+    print(f"Tripulantes: {tripulantes}")
+
+    # Salida: comparación de cada recurso disponible contra el requerido
+    for i in range(len(RECURSOS)):
+        print(f"{RECURSOS[i].capitalize()}: disponible {disponibles[i]} | "
+              f"requerido {requeridos[i]}")
+
+    # Decisión: el margen es el combustible extra sobre lo requerido (Ejercicio 2)
+    margen = disponibles[COMBUSTIBLE] - requeridos[COMBUSTIBLE]
+    print(f"Margen adicional de combustible: {margen} unidades")
+    if margen < MARGEN_MINIMO_COMBUSTIBLE:
+        print("Advertencia: el margen adicional de combustible es bajo.")
+
+
+def autorizar_lanzamiento(disponibles, requeridos):
+    # Decisión: basta con que un recurso no alcance para negar la
+    # autorización; por eso la variable inicia en True y solo cambia a False
+    autorizado = True
+    for i in range(len(RECURSOS)):
+        if disponibles[i] < requeridos[i]:
+            autorizado = False
+    return autorizado
