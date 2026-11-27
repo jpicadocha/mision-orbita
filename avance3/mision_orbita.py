@@ -284,3 +284,67 @@ def mostrar_resumen_exploracion(bitacora, recursos):
     print(f"Muestras recolectadas: {contar_actividad(bitacora, NOMBRE_MUESTRA)}")
     print(f"Puntos científicos: {calcular_puntos(bitacora)}")
     mostrar_recursos(recursos)
+
+
+# ============================================================
+# Componente D: Regreso y supervivencia
+# ============================================================
+
+def puede_regresar(recursos, dias_viaje):
+    # Decisión: solo se exige el combustible del regreso, sin la reserva
+    combustible_regreso = dias_viaje * CONSUMO_COMBUSTIBLE_DIA
+    puede = recursos[COMBUSTIBLE] >= combustible_regreso
+    return puede
+
+
+def calcular_supervivencia(recursos, tripulantes):
+    # Procesamiento: división entera porque solo cuentan los días completos.
+    # El orden de la lista es el de RECURSOS_VITALES.
+    dias_oxigeno = recursos[OXIGENO] // (tripulantes * CONSUMO_OXIGENO_TRIPULANTE_DIA)
+    dias_energia = recursos[ENERGIA] // CONSUMO_ENERGIA_DIA
+    dias_provisiones = recursos[PROVISIONES] // (tripulantes
+                                                 * CONSUMO_PROVISIONES_TRIPULANTE_DIA)
+    dias_por_recurso = [dias_oxigeno, dias_energia, dias_provisiones]
+    return dias_por_recurso
+
+
+def obtener_limitantes(dias_por_recurso, minimo):
+    # Recorrido: se guardan todos los recursos que empatan con el mínimo
+    limitantes = []
+    for i in range(len(dias_por_recurso)):
+        if dias_por_recurso[i] == minimo:
+            limitantes.append(RECURSOS_VITALES[i])
+    return limitantes
+
+
+def regresar(recursos, dias_viaje, tripulantes):
+    print("=== REGRESO ===")
+    # Decisión principal: caso A (puede regresar) o caso B (varada)
+    if puede_regresar(recursos, dias_viaje):
+        # Caso A: el regreso dura lo mismo que la ida
+        dias_completados = simular_trayecto(recursos, dias_viaje, tripulantes)
+        if dias_completados == dias_viaje:
+            print("La tripulación regresó exitosamente a la Tierra.")
+            mostrar_recursos(recursos)
+            resultado = RESULTADOS[RES_EXITOSO]
+        else:
+            # El día que falló es el siguiente al último completado
+            print(f"El regreso se interrumpió en el día {dias_completados + 1}.")
+            consumo = calcular_consumo_diario(tripulantes)
+            for i in range(len(RECURSOS)):
+                if recursos[i] < consumo[i]:
+                    print(f"Recurso insuficiente: {RECURSOS[i]}")
+            print("La tripulación no completó el regreso.")
+            resultado = RESULTADOS[RES_INTERRUMPIDO]
+    else:
+        # Caso B: sin combustible para volver se estima la supervivencia
+        print("La tripulación quedó varada en el destino.")
+        dias_por_recurso = calcular_supervivencia(recursos, tripulantes)
+        for i in range(len(dias_por_recurso)):
+            print(f"Días por {RECURSOS_VITALES[i]}: {dias_por_recurso[i]}")
+        minimo = min(dias_por_recurso)
+        limitantes = obtener_limitantes(dias_por_recurso, minimo)
+        print(f"Supervivencia estimada: {minimo} días")
+        print(f"Recurso(s) limitante(s): {', '.join(limitantes)}")
+        resultado = RESULTADOS[RES_VARADA]
+    return resultado
