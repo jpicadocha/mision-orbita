@@ -348,3 +348,85 @@ def regresar(recursos, dias_viaje, tripulantes):
         print(f"Recurso(s) limitante(s): {', '.join(limitantes)}")
         resultado = RESULTADOS[RES_VARADA]
     return resultado
+
+
+# ============================================================
+# Componente E: Reporte final ordenado
+# ============================================================
+
+def obtener_puntos_actividad(fila):
+    # Criterio de ordenamiento para sorted(): puntos de la fila
+    puntos = fila[BIT_PUNTOS]
+    return puntos
+
+
+def ordenar_bitacora(bitacora):
+    # sorted() devuelve una matriz nueva y conserva el orden original de las
+    # filas con el mismo puntaje, así que el número menor queda primero
+    bitacora_ordenada = sorted(bitacora, key=obtener_puntos_actividad, reverse=True)
+    return bitacora_ordenada
+
+
+def mostrar_reporte(mision, bitacora):
+    # Salida: datos de la misión
+    print("=== REPORTE FINAL ===")
+    print(f"Misión: {mision[MIS_NOMBRE]}")
+    print(f"Destino: {mision[MIS_DESTINO]}")
+    print(f"Resultado: {mision[MIS_RESULTADO]}")
+    print(f"Puntos científicos: {mision[MIS_PUNTOS]}")
+    print("Bitácora de exploración (de mayor a menor puntaje):")
+
+    # Decisión: bitácora vacía o recorrido de la bitácora ordenada
+    if len(bitacora) == 0:
+        print("Sin actividades registradas.")
+    else:
+        for fila in ordenar_bitacora(bitacora):
+            print(f"#{fila[BIT_NUMERO]} {fila[BIT_ACTIVIDAD]} - {fila[BIT_PUNTOS]} puntos")
+
+
+def ejecutar_mision(numero):
+    # Entrada de datos de la planificación
+    print("=== PLANIFICACIÓN ===")
+    nombre_mision = input("Nombre de la misión: ")
+    tripulantes = int(input("Cantidad de tripulantes: "))
+    mostrar_destinos()
+    opcion_destino = int(input("Seleccione un destino: "))
+
+    # Si la misión no llega a explorar, la bitácora queda vacía (0 puntos)
+    bitacora = []
+
+    # Decisión: validación de la opción de destino
+    if opcion_destino < PRIMERA_OPCION or opcion_destino > len(DESTINOS):
+        print("Opción de destino no válida. La misión no puede planificarse.")
+        nombre_destino = DESTINO_NINGUNO
+        resultado = RESULTADOS[RES_NO_PLANIFICADA]
+    else:
+        # Preparación: la opción empieza en 1 y la fila de la tupla en 0
+        destino = DESTINOS[opcion_destino - 1]
+        nombre_destino = destino[DES_NOMBRE]
+        dias_viaje = destino[DES_DIAS]
+        recursos = leer_recursos()
+        requeridos = calcular_requeridos(dias_viaje, tripulantes)
+        mostrar_resumen(nombre_mision, nombre_destino, dias_viaje, tripulantes,
+                        recursos, requeridos)
+
+        # Decisión: autorización del lanzamiento
+        if autorizar_lanzamiento(recursos, requeridos):
+            print("Lanzamiento autorizado.")
+            # Viaje → llegada → exploración → evaluación del regreso
+            print("=== VIAJE DE IDA ===")
+            recursos = viajar_al_destino(recursos, dias_viaje, tripulantes)
+            print(f"La nave llegó a {nombre_destino} en {dias_viaje} días.")
+            mostrar_recursos(recursos)
+            bitacora = explorar(recursos)
+            mostrar_resumen_exploracion(bitacora, recursos)
+            resultado = regresar(recursos, dias_viaje, tripulantes)
+        else:
+            print("Lanzamiento no autorizado. La misión debe ser revisada.")
+            resultado = RESULTADOS[RES_NO_AUTORIZADA]
+
+    # Salida: la fila de la misión se arma para el reporte y el historial
+    puntos = calcular_puntos(bitacora)
+    mision = [numero, nombre_mision, nombre_destino, resultado, puntos]
+    mostrar_reporte(mision, bitacora)
+    return mision
